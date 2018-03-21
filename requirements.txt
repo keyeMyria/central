@@ -1,0 +1,4 @@
+Django==2.0.3
+djangorestframework==3.7.7
+drf-nested-routers==0.90.2
+pytz==2018.3
