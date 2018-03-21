@@ -9,3 +9,12 @@ from status.models import *
 class HostsOverview(viewsets.ModelViewSet):
     serializer_class = HostSerializer
     queryset = HostStatus.objects.all()
+
+class InfosViewSet(viewsets.ModelViewSet):
+    serializer_class = InfoSerializer
+    def get_queryset(self):
+        queryset = AdditionalInfo.objects.all()
+        host = self.request.query_params.get('host')
+        if host is not None:
+            queryset = queryset.filter(host=host)
+        return queryset

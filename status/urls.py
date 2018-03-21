@@ -4,6 +4,6 @@ from status import views
 
 router = routers.SimpleRouter()
 router.register(r'list', views.HostsOverview)
-
+router.register(r'detail', views.InfosViewSet, 'detail')
 
 urlpatterns = router.urls
