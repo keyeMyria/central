@@ -24,10 +24,22 @@ class HostSerializer(serializers.ModelSerializer):
         return host
 
     def update(self, instance, validated_data):
-        validated_data.pop('infos')
-        instance = models.HostStatus(**validated_data)
+        infos = validated_data.pop('infos')
+        instance.name = validated_data.get('name', instance.name)
+        instance.dns = validated_data.get('dns', instance.dns)
+        instance.ip = validated_data.get('ip', instance.ip)
+        instance.description = validated_data.get('description', instance.description)
+        instance.up = validated_data.get('up', instance.up)
+        instance.state = validated_data.get('state', instance.state)
+        instance.lastseen = validated_data.get('lastseen', instance.lastseen)
         instance.save()
-        #for info in validated_data['infos']:
-        #    if info not in instance.infos: #création
-        #        models.AdditionalInfo()
+        if len(infos) > 0:
+            #new_infos = [info['title'] for info in infos]
+            #for info in instance.infos.all():
+            #    if info.title not in new_infos:
+            #        info.delete()
+            for info in instance.infos.all():
+                info.delete()
+            for info in infos:
+                models.AdditionalInfo(**info).save()
         return instance
