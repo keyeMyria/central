@@ -20,6 +20,9 @@ class HostStatus(models.Model):
     state = models.IntegerField(verbose_name='État', choices=HOST_STATES)
     lastseen = models.DateTimeField(verbose_name='Dernier accès/update', auto_now=True)
 
+    def __str__(self):
+        return self.name+' - '+self.dns+' ('+str(self.ip)+'), '+HOST_STATES[self.state][1]
+
 class AdditionalInfo(models.Model):
     host = models.ForeignKey(to=HostStatus, on_delete=models.CASCADE, verbose_name='Machine',
                              related_name='infos', null=True)
