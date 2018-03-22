@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 # Create your models here.
 
 HOST_STATES = [
@@ -60,8 +61,14 @@ class Status(models.Model):
     lastseen = models.DateTimeField(verbose_name='Dernier accès/update', auto_now=True)
     remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
     def reachable(self):
-        print("test SSH")
-        return test_ssh(self.pk)
+        if self.remote_capable:
+            print("test SSH")
+            if test_ssh(self.pk, Token.objects.get(user=self.host.user).key):
+                return True
+            else:
+                status = Status.objects.get(pk=self.pk)
+                status.remote_capable = False
+                status.save()
     def dns(self):
         return self.host.dns
     def __str__(self):
