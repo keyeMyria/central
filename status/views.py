@@ -6,16 +6,26 @@ from status.models import *
 
 # Create your views here.
 
-class HostsOverview(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+class HostsOverview(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = HostSerializer
-    queryset = HostStatus.objects.all()
+    queryset = Host.objects.all()
 
 class InfosViewSet(viewsets.ModelViewSet):
-
-    serializer_class = InfoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DetailSerializer
     def get_queryset(self):
-        queryset = AdditionalInfo.objects.all()
+        queryset = Detail.objects.all()
+        host = self.request.query_params.get('host')
+        if host is not None:
+            queryset = queryset.filter(host=host)
+        return queryset
+
+class StatusViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StatusSerializer
+    def get_queryset(self):
+        queryset = Status.objects.all()
         host = self.request.query_params.get('host')
         if host is not None:
             queryset = queryset.filter(host=host)

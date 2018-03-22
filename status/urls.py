@@ -5,5 +5,6 @@ from status import views
 router = routers.DefaultRouter()
 router.register(r'list', views.HostsOverview)
 router.register(r'detail', views.InfosViewSet, 'detail')
+router.register(r'status', views.StatusViewSet, 'status')
 
 urlpatterns = router.urls

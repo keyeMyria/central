@@ -1,26 +1,32 @@
 from rest_framework import serializers
 from status import models
 
-class InfoSerializer(serializers.ModelSerializer):
+class DetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.AdditionalInfo
+        model = models.Detail
         fields = '__all__'
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Status
+        fields = '__all__'
+    lastseen = serializers.ReadOnlyField()
 
 class HostSerializer(serializers.ModelSerializer):
     #def get_queryset(self):
     #    return models.AdditionalInfo.objects.filter(host=self.id)
     class Meta:
-        model = models.HostStatus
+        model = models.Host
         fields = '__all__'
         depth = 1
-    lastseen = serializers.ReadOnlyField()
-    infos = InfoSerializer(many=True)
+    status = StatusSerializer()
+    details = DetailSerializer(many=True)
 
+class Test:
     def create(self, validated_data):
-        infos_data = validated_data.pop('infos')
-        host = models.HostStatus.objects.create(**validated_data)
+        infos_data = validated_data.pop('details')
+        host = models.Status.objects.create(**validated_data)
         for info_data in infos_data:
-            models.AdditionalInfo.objects.create(host=host, **info_data)
+            models.Detail.objects.create(host=host, **info_data)
         return host
 
     def update(self, instance, validated_data):
@@ -38,8 +44,8 @@ class HostSerializer(serializers.ModelSerializer):
             #for info in instance.infos.all():
             #    if info.title not in new_infos:
             #        info.delete()
-            for info in instance.infos.all():
+            for info in instance.details.all():
                 info.delete()
             for info in infos:
-                models.AdditionalInfo(**info).save()
+                models.Detail(**info).save()
         return instance
