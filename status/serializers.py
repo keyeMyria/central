@@ -10,6 +10,7 @@ class StatusSerializer(serializers.ModelSerializer):
         model = models.Status
         fields = '__all__'
     lastseen = serializers.ReadOnlyField()
+    dns = serializers.ReadOnlyField()
 
 class HostSerializer(serializers.ModelSerializer):
     #def get_queryset(self):

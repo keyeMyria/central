@@ -31,18 +31,18 @@ POWER_ACTIONS = [
 class Host(models.Model):
     class Meta:
         verbose_name = 'Machine'
+    name = models.CharField(max_length=255, verbose_name='Nom de la machine')
     description = models.CharField(max_length=2047, verbose_name='Description')
     dns = models.CharField(max_length=255, verbose_name='Nom de domaine')
-    name = models.CharField(max_length=255, verbose_name='Nom de la machine')
     chassis = models.CharField(verbose_name='Chassis', choices=CHASSIS, max_length=255) #physique
     use_case = models.CharField(verbose_name="Type d'utilisation", choices=USE_CASE, max_length=255)
     power_action = models.CharField(choices=POWER_ACTIONS, verbose_name='Gestion de l\'alimentation',
                                     max_length=255) #actions d'alimentations disponibles/possibles
-    #user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='API user')
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='API user')
     def __str__(self):
         return self.name+' ('+self.dns+') - '+self.use_case +' '+self.chassis
     def state(self):
-        return self.status.state
+        return HOST_STATES[self.status.state][1]
     def ip(self):
         return self.status.ip
     def statut(self):
@@ -53,12 +53,13 @@ class Status(models.Model):
         verbose_name_plural = 'Status des machines'
         verbose_name = 'Status'
     host = models.OneToOneField(to=Host, verbose_name='Machine', related_name='status', on_delete=models.CASCADE)
-    ip = models.GenericIPAddressField(verbose_name='Adresse IP')
+    ip = models.GenericIPAddressField(verbose_name='Adresse IP', null=True)
     up = models.BooleanField(verbose_name='Allumé ?', default=False)
     state = models.IntegerField(verbose_name='État', choices=HOST_STATES)
     lastseen = models.DateTimeField(verbose_name='Dernier accès/update', auto_now=True)
     remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
-
+    def dns(self):
+        return self.host.dns
     def __str__(self):
         return self.host.name+' - '+self.host.dns+' ('+str(self.ip)+'), '+HOST_STATES[self.state][1]
 

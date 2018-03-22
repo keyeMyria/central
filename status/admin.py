@@ -16,7 +16,7 @@ class Status(admin.TabularInline):
 
 @admin.register(Host)
 class HostAdmin(admin.ModelAdmin):
-    list_display = ['name', 'dns', 'ip', 'state', 'up']
+    list_display = ['name', 'dns', 'ip', 'state', 'up', 'user']
     inlines = [Status, Detail]
     def up(self, obj):
         return bool(obj.status.up)
