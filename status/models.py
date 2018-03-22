@@ -47,17 +47,21 @@ class Host(models.Model):
         return self.status.ip
     def statut(self):
         return self.status
-
+from status.ssh_test import test_ssh
 class Status(models.Model):
     class Meta:
         verbose_name_plural = 'Status des machines'
         verbose_name = 'Status'
     host = models.OneToOneField(to=Host, verbose_name='Machine', related_name='status', on_delete=models.CASCADE)
     ip = models.GenericIPAddressField(verbose_name='Adresse IP', null=True)
+    local_ip = models.GenericIPAddressField(verbose_name='IP locale', null=True)
     up = models.BooleanField(verbose_name='Allumé ?', default=False)
     state = models.IntegerField(verbose_name='État', choices=HOST_STATES)
     lastseen = models.DateTimeField(verbose_name='Dernier accès/update', auto_now=True)
     remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
+    def reachable(self):
+        print("test SSH")
+        return test_ssh(self.pk)
     def dns(self):
         return self.host.dns
     def __str__(self):

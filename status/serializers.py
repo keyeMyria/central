@@ -11,6 +11,7 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = '__all__'
     lastseen = serializers.ReadOnlyField()
     dns = serializers.ReadOnlyField()
+    reachable = serializers.ReadOnlyField()
 
 class HostSerializer(serializers.ModelSerializer):
     #def get_queryset(self):

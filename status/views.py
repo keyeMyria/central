@@ -44,7 +44,7 @@ class StatusViewSet(viewsets.ModelViewSet):
         me = Status.objects.get(host__user=request.user)
         return Response(me.pk)
 
-@permission_classes([permissions.IsAuthenticated])
+#@permission_classes([permissions.IsAuthenticated])
 def me(request):
     pk = Status.objects.get(host__user=request.user).pk
     url = reverse('status-detail', request=request, args={pk})
