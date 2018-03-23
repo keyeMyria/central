@@ -8,7 +8,7 @@
 </script>
 </head>
 <body>
-<span id="online">Status</span>, <span id="players"></span> joueurs
+<span id="online">Status:</span> <span id="players">joueurs</span>
 <script>
     $( document ).ready(function () {
         console.log("BONJOUR");
@@ -17,11 +17,12 @@
             success: function (result) {
                 if(result.up){$("#online").html('En ligne');}
                 $("#motd").html(result.motd);
-                $("#players").html(result.players+'/'+result.max);
+                $("#players").prepend(', '+result.players+'/'+result.max);
                 console.log(result);
                 },
             error: function (result, status, error) {
                 $("#online").html('Hors service');
+                $("#players").hide();
                 console.log(error)
                 console.log(result)
                 console.log(status)
