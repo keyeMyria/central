@@ -69,6 +69,7 @@ class Status(models.Model):
                 status = Status.objects.get(pk=self.pk)
                 status.remote_capable = False
                 status.save()
+        else: return False
     def dns(self):
         return self.host.dns
     def __str__(self):
