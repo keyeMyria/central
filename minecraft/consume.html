@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous">
+</script>
+</head>
+<body>
+<span id="online">Status</span>, <span id="players"></span> joueurs
+<script>
+    $( document ).ready(function () {
+        console.log("BONJOUR");
+        $.ajax({
+            url: 'http://localhost:8000/minecraft/status',
+            success: function (result) {
+                if(result.up){$("#online").html('En ligne');}
+                $("#motd").html(result.motd);
+                $("#players").html(result.players+'/'+result.max);
+                console.log(result);
+                },
+            error: function (result, status, error) {
+                $("#online").html('Hors service');
+                console.log(error)
+                console.log(result)
+                console.log(status)
+            }
+            });
+        console.log('ajax passé')
+    });
+</script>
+
+
+</body>
+</html>

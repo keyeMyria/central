@@ -3,6 +3,7 @@ bcrypt==3.1.4
 cffi==1.11.5
 cryptography==2.2.1
 Django==2.0.3
+django-cors-headers==2.2.0
 djangorestframework==3.7.7
 drf-nested-routers==0.90.2
 idna==2.6

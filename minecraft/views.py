@@ -1,8 +1,9 @@
 from minecraft.minestat import  MineStat
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
-
+@csrf_exempt
 @api_view(['get'])
 def minecraft_status(request):
     mc = MineStat('ribes.me', 53)
