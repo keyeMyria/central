@@ -17,3 +17,7 @@ def minecraft_status(request):
     else:
         return Response({'detail':'Offline',
             "up":False}, status=500)
+
+@api_view(['get']) #définit une vue gérée par DRF, et permet d'utiliser Response
+def hello_world(request):
+    return Response({"message":"Hello World !"})

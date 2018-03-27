@@ -31,7 +31,23 @@
         console.log('ajax passé')
     });
 </script>
-
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<p id="reponse-ajax">Ce texte devrait être remplacé par Hello World</p>
+<button id="trigger">Contacter le serveur d'API</button>
+<script>
+$('#trigger').on('click',function () {
+        $.ajax({
+            url: "http://localhost:8000/minecraft/hello/world",
+            success: function (result) {
+                $("#reponse-ajax").html(result.message);
+                //console.log(result);
+            },
+            error: function (result, status, error) {
+                console.log(error);
+            }
+        });
+    });
+    </script>
 
 </body>
 </html>
