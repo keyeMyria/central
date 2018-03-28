@@ -23,6 +23,8 @@ class HostSerializer(serializers.ModelSerializer):
     status = StatusSerializer()
     details = DetailSerializer(many=True)
 
+########################################
+
 class Test:
     def create(self, validated_data):
         infos_data = validated_data.pop('details')

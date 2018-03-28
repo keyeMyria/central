@@ -33,7 +33,7 @@ CORS_ORIGIN_WHITELIST = os.environ.get('CORS_WHITELIST', 'null').split(',') + [
     'localhost:8000',
     'localhost:4200',
     '127.0.0.1:9000'
-]
+]+ALLOWED_HOSTS
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-'corsheaders',
+    'corsheaders',
     'status',
     'minecraft',
 ]
@@ -65,6 +65,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     )
 }
 
@@ -138,3 +139,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = 'static/'

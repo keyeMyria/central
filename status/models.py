@@ -40,6 +40,7 @@ class Host(models.Model):
     power_action = models.CharField(choices=POWER_ACTIONS, verbose_name='Gestion de l\'alimentation',
                                     max_length=255) #actions d'alimentations disponibles/possibles
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='API user')
+    remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
     def __str__(self):
         return self.name+' ('+self.dns+') - '+self.use_case +' '+self.chassis
     def state(self):
@@ -59,15 +60,14 @@ class Status(models.Model):
     up = models.BooleanField(verbose_name='Allumé ?', default=False)
     state = models.IntegerField(verbose_name='État', choices=HOST_STATES)
     lastseen = models.DateTimeField(verbose_name='Dernier accès/update', auto_now=True)
-    remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
     def reachable(self):
-        if self.remote_capable:
+        if self.up and self.host.remote_capable:
             print("test SSH")
             if test_ssh(self.pk, Token.objects.get(user=self.host.user).key):
                 return True
             else:
-                status = Status.objects.get(pk=self.pk)
-                status.remote_capable = False
+                status = Status.objects.get(pk=self.pk) #je pouvais pas set depuis self.xx.save()
+                status.up = False
                 status.save()
         else: return False
     def dns(self):
