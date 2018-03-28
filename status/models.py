@@ -40,7 +40,7 @@ class Host(models.Model):
     power_action = models.CharField(choices=POWER_ACTIONS, verbose_name='Gestion de l\'alimentation',
                                     max_length=255) #actions d'alimentations disponibles/possibles
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='API user')
-    remote_capable = models.BooleanField(verbose_name='Accès à distance possible')
+    remote_capable = models.BooleanField(verbose_name='Accès à distance possible', default=False)
     def __str__(self):
         return self.name+' ('+self.dns+') - '+self.use_case +' '+self.chassis
     def state(self):

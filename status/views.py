@@ -41,7 +41,7 @@ class StatusViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def me(self, request):
-        me = Status.objects.get(host__user=request.user)
+        me = Host.objects.get(user=request.user)
         return Response(me.pk)
 
 #@permission_classes([permissions.IsAuthenticated])
