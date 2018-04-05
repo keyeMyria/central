@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'status',
     'minecraft',
+    'dames',
 ]
 
 MIDDLEWARE = [

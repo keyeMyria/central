@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'api/authenticate', obtain_jwt_token),
     path('hosts/', include('status.urls')),
-    path('minecraft/', include('minecraft.urls'))
+    path('minecraft/', include('minecraft.urls')),
+    path('dames/', include('dames.urls')),
 ]
