@@ -4,5 +4,16 @@ from django.db import models
 # Create your models here.
 
 class Partie(models.Model):
-    data = models.CharField(max_length=2048, verbose_name='Données JSON')
+    data = models.CharField(max_length=4096, verbose_name='Données JSON', blank=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    player1 = models.CharField(max_length=255, verbose_name="Joueur des blancs", blank=True)
+    player2 = models.CharField(max_length=255, verbose_name="Joueur des noirs", blank=True)
+
+    @property
+    def is_waiting(self):
+        if len(self.player2):
+            return True
+        else: return False
+
+    def __str__(self):
+        return self.player1 +" "+ self.player2
