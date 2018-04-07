@@ -6,7 +6,7 @@ from uuid import uuid1
 
 class PartieSerializer(serializers.ModelSerializer):
     class Meta:
-        exclude = ['user']
+        exclude = ['user', 'player1_turn']
         model = Partie
     def create(self, validated_data):
         user = User.objects.create(username=uuid1())

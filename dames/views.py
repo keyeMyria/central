@@ -62,4 +62,14 @@ class Lobby(ModelViewSet):
         if serializer.is_valid():
             return HttpResponse(serializer.create(serializer.validated_data))
 
+@api_view(['GET'])
+def qui_joue(request):
+    partie = Partie.objects.get(user=request.user)
+    return HttpResponse(partie.player1_turn)
 
+@api_view(['GET'])
+def a_toi(request):
+    partie = Partie.objects.get(user=request.user)
+    partie.player1_turn = not partie.player1_turn
+    partie.save()
+    return HttpResponse(partie.player1_turn)

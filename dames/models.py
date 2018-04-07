@@ -8,6 +8,7 @@ class Partie(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     player1 = models.CharField(max_length=255, verbose_name="Joueur des blancs", blank=True)
     player2 = models.CharField(max_length=255, verbose_name="Joueur des noirs", blank=True)
+    player1_turn= models.BooleanField(verbose_name="C'est au tour des blancs", default=True)
 
     @property
     def is_waiting(self):

@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'lobby/$', views.liste),
     url(r'join/(?P<pk>[0-9]+$)', views.rejoindre),
     url(r'delete/$', views.delete),
+    url(r'a-qui-le-tour/$', views.qui_joue),
+    url(r'a-toi-le-tour/$', views.a_toi),
 ]+router.urls
