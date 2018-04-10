@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -39,10 +40,12 @@ def liste(request):
                         "player1": partie.player1})
     return Response(reponse)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def rejoindre(request, pk):
     partie = Partie.objects.get(id=pk)
     token = Token.objects.get(user=partie.user)
+    partie.player2 = request.data["nom"]
+    partie.save()
     return HttpResponse(token.key)
 
 @api_view(['DELETE'])
@@ -54,8 +57,15 @@ def delete(request):
     return Response("DELETED")
 
 class Lobby(ModelViewSet):
-    queryset = Partie.objects.exclude(player2__gt='')
+    #queryset = Partie.objects.all()#exclude(player2__gt='')
     serializer_class = PartieSerializer
+
+    def get_queryset(self):
+        if self.request.user is not AnonymousUser:
+            queryset = Partie.objects.filter(user=self.request.user)
+        else:
+            queryset = Partie.objects.exclude(player2__gt='')
+        return queryset
 
     def create(self, request, *args, **kwargs):
         serializer = PartieSerializer(data=request.data)
