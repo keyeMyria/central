@@ -12,8 +12,10 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.authtoken.models import Token
 from dames.models import Partie
 from dames.serializers import PartieSerializer
-
-
+from asgiref.sync import async_to_sync
+from channels_redis import *
+from channels.layers import get_channel_layer
+import channels
 class PartieViewset(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
@@ -26,6 +28,8 @@ class PartieViewset(APIView):
         except Partie.DoesNotExist:
             partie = Partie.objects.create(user=request.user, data=request.data)
         partie.data = self.request.data
+        #async_to_sync(get_channel_layer().send("ping-"+partie.id, {"a_toi":partie.player1_turn,
+        #                                                                           "data":partie.data}))
         partie.save()
         return Response(request.data, status=201)
     def delete(self, request):
@@ -81,5 +85,16 @@ def qui_joue(request):
 def a_toi(request):
     partie = Partie.objects.get(user=request.user)
     partie.player1_turn = not partie.player1_turn
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "ping_"+str(partie.id),
+        {
+            'type': 'update',
+            'couleur':partie.couleur_joue
+         })
     partie.save()
+    print(partie.id)
     return HttpResponse(partie.player1_turn)
+
+def test_ws(request):
+    return render(request, 'test_ws.html', {})

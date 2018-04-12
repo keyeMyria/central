@@ -37,6 +37,7 @@ CORS_ORIGIN_WHITELIST = os.environ.get('CORS_WHITELIST', 'null').split(',') + [
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,6 +71,15 @@ REST_FRAMEWORK = {
     )
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 ROOT_URLCONF = 'central.urls'
 
 TEMPLATES = [
@@ -90,7 +100,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'central.wsgi.application'
-
+ASGI_APPLICATION = "central.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases

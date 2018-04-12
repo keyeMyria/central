@@ -18,3 +18,6 @@ class Partie(models.Model):
 
     def __str__(self):
         return self.player1 +" "+ self.player2
+    @property
+    def couleur_joue(self):
+        return self.player1_turn

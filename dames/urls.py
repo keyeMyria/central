@@ -8,6 +8,7 @@ router.register(r'partie', views.Lobby, 'partie')
 
 urlpatterns = [
     url(r'^sync/$', views.PartieViewset.as_view()),
+    url(r'test-ws/$', views.test_ws),
     url(r'lobby/$', views.liste),
     url(r'join/(?P<pk>[0-9]+$)', views.rejoindre),
     url(r'delete/$', views.delete),
