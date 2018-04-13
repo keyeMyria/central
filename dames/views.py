@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -28,8 +30,6 @@ class PartieViewset(APIView):
         except Partie.DoesNotExist:
             partie = Partie.objects.create(user=request.user, data=request.data)
         partie.data = self.request.data
-        #async_to_sync(get_channel_layer().send("ping-"+partie.id, {"a_toi":partie.player1_turn,
-        #                                                                           "data":partie.data}))
         partie.save()
         return Response(request.data, status=201)
     def delete(self, request):

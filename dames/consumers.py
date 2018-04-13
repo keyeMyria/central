@@ -1,10 +1,46 @@
 # Fichier pour les vues "websocket"
-import async as async
+from time import sleep
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 
 from dames.models import Partie
+
+class DamesSync(WebsocketConsumer):
+    def connect(self):
+        self.id = self.scope["url_route"]["kwargs"]["id"]
+        self.couleur = self.scope["url_route"]["kwargs"]["couleur"]
+        self.adversaire = "noirs" if self.couleur == "blancs" else "blancs"
+        print("accepté un "+self.couleur+", adversaire "+self.adversaire)
+        async_to_sync(self.channel_layer.group_add)(self.couleur + self.id, self.channel_name)
+        self.partie = Partie.objects.get(id=self.id)
+        self.accept()
+        #while(self.couleur!=self.partie.couleur_joue): #dans le cas où le 2e peut se co n'import quand
+        #    sleep(1)
+        #    print(self.partie.couleur_joue)
+        if(self.partie.is_waiting):  #dans le cas où les joueurs doivent être co avant de démarrer la partie
+            sleep(3) #on attend la connection
+            print("sending")
+            self.send(text_data=self.partie.data)
+
+    def receive(self, text_data=None, bytes_data=None):
+        #self.send(text_data=text_data) #on re-broadcast les nouvelles données à tous les deux
+        #self.update_post({'data':text_data}) #on re-broadcast les nouvelles données à tous les deux
+        #print(text_data)
+        print(self.couleur+" pour "+self.adversaire)
+        self.partie.data = text_data
+        async_to_sync(self.channel_layer.group_send)(self.adversaire + str(self.id),
+                                                      {'type': 'update_post',
+                                                       'data': self.partie.data})
+        self.partie.save()
+
+    def update_post(self, event):
+        print(self.couleur)
+        self.send(text_data=event['data'])
+
+    def disconnect(self, code):
+        async_to_sync(self.channel_layer.group_discard)("sync_" + self.id, self.channel_name)
 
 class DamesPing(WebsocketConsumer):
     def connect(self):

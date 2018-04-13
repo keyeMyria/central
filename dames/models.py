@@ -12,7 +12,7 @@ class Partie(models.Model):
 
     @property
     def is_waiting(self):
-        if len(self.player2):
+        if len(self.player2)==0:
             return True
         else: return False
 
