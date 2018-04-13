@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'delete/$', views.delete),
     url(r'a-qui-le-tour/$', views.qui_joue),
     url(r'a-toi-le-tour/$', views.a_toi),
+    url(r'^id/$', views.id),
 ]+router.urls

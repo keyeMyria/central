@@ -20,4 +20,5 @@ class Partie(models.Model):
         return self.player1 +" "+ self.player2
     @property
     def couleur_joue(self):
-        return self.player1_turn
+        if not self.player1_turn: return "blancs"
+        else: return "noirs"

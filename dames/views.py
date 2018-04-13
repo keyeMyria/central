@@ -98,3 +98,8 @@ def a_toi(request):
 
 def test_ws(request):
     return render(request, 'test_ws.html', {})
+
+@api_view(['GET'])
+def id(request):
+    print("sent id")
+    return HttpResponse(str(Partie.objects.get(user=request.user).id))

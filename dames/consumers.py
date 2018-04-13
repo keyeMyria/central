@@ -12,18 +12,18 @@ class DamesPing(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)("ping_"+self.id, self.channel_name)
         self.accept()
         self.partie =  Partie.objects.get(id=self.id)
-        self.send(json.dumps({'couleur': self.partie.couleur_joue}))
+        #self.send(json.dumps({'couleur': self.partie.couleur_joue}))
+        self.send(text_data=self.partie.couleur_joue)
 
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)("ping_"+self.id, self.channel_name)
 
-    def update(self, event):
+    def update(self, event): #appelé depuis la view, correpond au "type"
         couleur = event["couleur"]
-        self.send(text_data=json.dumps({
-            'couleur': couleur
-        }))
-        print(couleur)
+        #self.send(text_data=json.dumps({'couleur': couleur}))
+        self.send(text_data=couleur)
+
     def receive(self, text_data=None, bytes_data=None):
         print(text_data)
         couleur = json.loads(text_data)["couleur"]
@@ -32,6 +32,4 @@ class DamesPing(WebsocketConsumer):
             if couleur=="blancs":  booleen = True
             self.partie.player1_turn = booleen
             self.partie.save()
-            self.send(json.dumps({'couleur':self.partie.couleur_joue}))
-        else:
-            self.send(json.dumps({'couleur':self.partie.couleur_joue}))
+        self.send(text_data=self.partie.couleur_joue)
