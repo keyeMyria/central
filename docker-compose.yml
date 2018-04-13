@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+
+  central:
+    build: .
+    container_name: central
+    environment:
+      - DJANGO_ENV=prod
+      - HOST=*
+      - SSL=False
+      - DJANGO_LOCALE=fr-fr
+      - DJANGO_TIMEZONE=Europe/Paris
+      - DATABASE_URL=mysql://user:password@db:3306/database
+      - DEBUG=False
+      - REDIS_HOST=redis
+    depends_on:
+      - central-mysql
+      - central-assets
+    links:
+      - central-mysql:db
+      - redis-cache:redis
+    volumes:
+      - central-static:/app/static
+    ports:
+      - "80:8000"
+
+  central-assets:
+    image: kyma/docker-nginx
+    container_name: central-assets
+    volumes:
+      - central-static:/var/www/static
+
+  central-mysql:
+    image: mysql
+    container_name: central-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=verysecret
+      - MYSQL_DATABASE=database
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - central-database:/var/lib/mysql
+
+  redis-cache:
+    image: redis
+    container_name: central-redis
+
+volumes:
+  central-static:
+  central-database:

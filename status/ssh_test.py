@@ -6,7 +6,7 @@ def test_ssh(id, token):
     port = 2200+int(id)
     print(port)
     try:
-        ssh.connect(hostname='localhost', username='status', password=token, port=port)
+        ssh.connect(hostname='172.17.0.1', username='status', password=token, port=port)
         print('OK')
         ssh.close()
         return True

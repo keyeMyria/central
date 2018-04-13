@@ -1,5 +1,7 @@
+aioredis==1.0.0
 asgiref==2.2.0
 asn1crypto==0.24.0
+async==0.6.2
 async-timeout==2.0.1
 attrs==17.4.0
 autobahn==18.4.1
@@ -7,17 +9,21 @@ Automat==0.6.0
 bcrypt==3.1.4
 cffi==1.11.5
 channels==2.0.2
+channels-redis==2.1.1
 constantly==15.1.0
 cryptography==2.2.1
 daphne==2.1.0
+dj-database-url==0.5.0
 Django==2.0.3
 django-cors-headers==2.2.0
 djangorestframework==3.7.7
 djangorestframework-jwt==1.11.0
 drf-nested-routers==0.90.2
+hiredis==0.2.0
 hyperlink==18.0.0
 idna==2.6
 incremental==17.5.0
+msgpack==0.5.6
 paramiko==2.4.1
 pyasn1==0.4.2
 pycparser==2.18
@@ -28,3 +34,4 @@ six==1.11.0
 Twisted==17.9.0
 txaio==2.10.0
 zope.interface==4.4.3
+mysqlclient
