@@ -19,10 +19,11 @@ class DamesSync(WebsocketConsumer):
         #while(self.couleur!=self.partie.couleur_joue): #dans le cas où le 2e peut se co n'import quand
         #    sleep(1)
         #    print(self.partie.couleur_joue)
-        if(self.partie.is_waiting):  #dans le cas où les joueurs doivent être co avant de démarrer la partie
-            sleep(3) #on attend la connection
-            print("sending")
-            self.send(text_data=self.partie.data)
+
+        #if(self.partie.is_waiting):
+        #    sleep(3) #on attend la connection
+        #    print("sending")
+        #    self.send(text_data=self.partie.data)
 
     def receive(self, text_data=None, bytes_data=None):
         #self.send(text_data=text_data) #on re-broadcast les nouvelles données à tous les deux
@@ -36,7 +37,7 @@ class DamesSync(WebsocketConsumer):
         self.partie.save()
 
     def update_post(self, event):
-        print(self.couleur)
+        print("envoi aux"+self.couleur)
         self.send(text_data=event['data'])
 
     def disconnect(self, code):

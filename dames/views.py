@@ -50,6 +50,12 @@ def rejoindre(request, pk):
     token = Token.objects.get(user=partie.user)
     partie.player2 = request.data["nom"]
     partie.save()
+    async_to_sync(get_channel_layer().group_send)( #lance le jeu une fois que les deux joueurs sont co
+        "blancs" + str(partie.id),
+        {
+            'type': 'update_post',
+            'data': partie.data
+        })
     return HttpResponse(token.key)
 
 @api_view(['DELETE'])
