@@ -5,9 +5,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -103,9 +103,23 @@ def a_toi(request):
     return HttpResponse(partie.player1_turn)
 
 def test_ws(request):
+    #return render(request, 'test.html', {})
     return render(request, 'test_ws.html', {})
 
 @api_view(['GET'])
 def id(request):
     print("sent id")
     return HttpResponse(str(Partie.objects.get(user=request.user).id))
+
+
+class Broadcast(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request):
+        msg = self.request.query_params.get('msg')
+        async_to_sync(get_channel_layer().group_send)("broadcast",
+                                                      {'type': 'update_post',
+                                                       'data': str(msg)})
+        return Response(msg)
+    def post(self, request):
+        msg = request.data.get('msg')
+        return Response(msg)

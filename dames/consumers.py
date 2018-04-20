@@ -14,6 +14,7 @@ class DamesSync(WebsocketConsumer):
         self.adversaire = "noirs" if self.couleur == "blancs" else "blancs"
         print("accepté un "+self.couleur+", adversaire "+self.adversaire)
         async_to_sync(self.channel_layer.group_add)(self.couleur + self.id, self.channel_name)
+        async_to_sync(self.channel_layer.group_add)("broadcast", self.channel_name) #
         self.partie = Partie.objects.get(id=self.id)
         self.accept()
         #while(self.couleur!=self.partie.couleur_joue): #dans le cas où le 2e peut se co n'import quand
@@ -41,7 +42,8 @@ class DamesSync(WebsocketConsumer):
         self.send(text_data=event['data'])
 
     def disconnect(self, code):
-        async_to_sync(self.channel_layer.group_discard)("sync_" + self.id, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.couleur + self.id, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)("broadcast", self.channel_name)
 
 class DamesPing(WebsocketConsumer):
     def connect(self):

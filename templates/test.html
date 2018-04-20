@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form class="form-style-4" id="connect" onsubmit="event.preventDefault();">
+    <label for="field1"><input id="login" type="text" name="field1">
+    </label>
+    <label for="field2"> <input id="password" type="password" name="field2"></label>
+    <label>
+        <input type="submit" value="Se connecter" id="bouton">
+    </label>
+    <p id="errors" style="color: tomato"></p>
+</form>
+<div id="app" style="display: none;">
+     <div id="result" style="border: teal solid 0.2em"></div>
+    <input id="query">
+    <button id="search">Envoyer</button>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script>
+    //var server = 'https://api.ribes.me';
+    var server = 'http://localhost:8000';
+    var JWT_token;
+    //auth
+    $("#connect").on("submit", function (event) {
+        event.preventDefault();
+        console.log("ajax");
+        $.ajax({
+            type: 'POST',
+            url: server + "/api/authenticate",
+            data: {
+                username: $('#login').val(),
+                password: $('#password').val()
+            },
+            success: function (result) {
+                JWT_token = result.token;
+                console.log(result);
+                console.log(JWT_token);
+                $('#app').show();
+                $('#connect').hide();
+            },
+            error: function (result, status, error) {
+                $("#bouton").html(error);
+                $('#errors').append('<br>'+result.responseJSON.non_field_errors[0]);
+                console.log(result);
+                console.log(status);
+                console.log(error)
+            }
+        })
+    });
+    //messages aux jeux de dames
+    $('#search').on('click', function () {
+        $.ajax({
+            url: server + "/dames/broadcast/",
+            type:'POST',
+            headers:{
+                'Authorization': "JWT "+JWT_token
+            },
+            data: {
+                msg: $("#query").val()
+            },
+            success: function (result) {
+                $(".search").html("Success");
+                console.log(result);
+                $('#result').append(result + '<br>');
+            },
+            error: function (result, status, error) {
+                $('#result').html(result.responseJSON.detail);
+                $("#search").html(error);
+                console.log(result);
+                console.log(status);
+                console.log(error);
+                $('#connect').show();
+            }
+        })
+    });
+</script>
+
+<style type="text/css">
+.form-style-4{
+    width: 450px;
+    font-size: 16px;
+    background: #495C70;
+    padding: 30px 30px 15px 30px;
+    border: 5px solid #53687E;
+}
+.form-style-4 button,
+.form-style-4 input[type=button],
+.form-style-4 input[type=text],
+.form-style-4 input[type=email],
+.form-style-4 input[type=password],
+.form-style-4 textarea,
+.form-style-4 label
+{
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 16px;
+    color: #fff;
+
+}
+.form-style-4 label {
+    display:block;
+    margin-bottom: 10px;
+}
+.form-style-4 label > span{
+    display: inline-block;
+    float: left;
+    width: 150px;
+}
+.form-style-4 input[type=text],
+.form-style-4 input[type=password],
+.form-style-4 input[type=email]
+{
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed #83A4C5;
+    width: 275px;
+    outline: none;
+    padding: 0px 0px 0px 0px;
+    font-style: italic;
+}
+.form-style-4 textarea{
+    font-style: italic;
+    padding: 0px 0px 0px 0px;
+    background: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px dashed #83A4C5;
+    width: 275px;
+    overflow: hidden;
+    resize:none;
+    height:20px;
+}
+
+.form-style-4 textarea:focus,
+.form-style-4 input[type=text]:focus,
+.form-style-4 input[type=email]:focus,
+.form-style-4 input[type=email] :focus
+{
+    border-bottom: 1px dashed #D9FFA9;
+}
+
+.form-style-4 input[type=submit],
+.form-style-4 button
+.form-style-4 input[type=button]{
+    background: #576E86;
+    border: none;
+    padding: 8px 10px 8px 10px;
+    border-radius: 5px;
+    color: #A8BACE;
+}
+.form-style-4 input[type=submit]:hover,
+.form-style-4 button:hover,
+.form-style-4 input[type=button]:hover{
+background: #394D61;
+}
+</style>
+</body>
+</html>
