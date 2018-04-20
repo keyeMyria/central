@@ -122,4 +122,7 @@ class Broadcast(APIView):
         return Response(msg)
     def post(self, request):
         msg = request.data.get('msg')
+        async_to_sync(get_channel_layer().group_send)("broadcast",
+                                                      {'type': 'update_post',
+                                                       'data': msg})
         return Response(msg)
