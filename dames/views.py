@@ -21,8 +21,7 @@ import channels
 class PartieViewset(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        partie = Partie.objects.get(user=request.user)
-        return HttpResponse(partie.data) #si j'utilise Response, DRF mettra des guillements supplémentaire
+        return Response(Partie.objects.all().values()) #liste les parties
 
     def post(self, request):
         try:
@@ -50,6 +49,7 @@ def rejoindre(request, pk):
     token = Token.objects.get(user=partie.user)
     partie.player2 = request.data["nom"]
     partie.save()
+    print(partie.player2)
     async_to_sync(get_channel_layer().group_send)( #lance le jeu une fois que les deux joueurs sont co
         "blancs" + str(partie.id),
         {

@@ -7,10 +7,12 @@
         #plateau {
             background-color: burlywood;
         }
+
         .caseNoire {
             background: black;
             color: white;
         }
+
         .caseBlanche {
             background: white;
             color: black;
@@ -18,8 +20,10 @@
     </style>
 </head>
 <body>
-<table id="plateau" border="1"></table>
+Plateau : <table id="plateau" border="1"></table>
 <div id="messages"></div>
+
+Lobby :
 <table id="lobby" border="1"></table>
 <button onclick="getLobby()">lobby</button>
 ID: <input id="partie_id" onmouseleave="start(this.value)">
@@ -31,7 +35,7 @@ ID: <input id="partie_id" onmouseleave="start(this.value)">
      * Script pour voir en temps réel les parties de dames
      * @type {string}
      */
-    //var id;
+        //var id;
     var json_data = '[{"coordX":0,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":5,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":0,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":4,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":1,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false}]';
     var plateau;
     var pions;
@@ -77,48 +81,54 @@ ID: <input id="partie_id" onmouseleave="start(this.value)">
         };
         gameSocket.connect();
     }
+
     function stop() {
-        if(gameSocket != null) {
+        if (gameSocket != null) {
             console.log(gameSocket);
             gameSocket.close();
             //gameSocket.disconnect();
             gameSocket = null;
         }
     }
+
     function genPlateau(taille) {
         plateau.innerHTML = '';
         var row = plateau.insertRow()
-        for(var h=0;h<taille+1;h++){row.insertCell().innerText=h} //pour les axes horitontaux
-        for(var i=0;i<taille;i++) {
+        for (var h = 0; h < taille + 1; h++) {
+            row.insertCell().innerText = h
+        } //pour les axes horitontaux
+        for (var i = 0; i < taille; i++) {
             row = plateau.insertRow(-1)
-            row.insertCell().innerText = i+1 //pour les axes verticaux
+            row.insertCell().innerText = i + 1 //pour les axes verticaux
             //console.log("row")
-            row.setAttribute("id", "r"+i)
-            for(var j=0;j<taille;j++) {
+            row.setAttribute("id", "r" + i)
+            for (var j = 0; j < taille; j++) {
                 var cell = row.insertCell(-1)
                 //console.log("cell")
-                cell.setAttribute("id", "r"+i+"c"+j);
+                cell.setAttribute("id", "r" + i + "c" + j);
                 cell.setAttribute("width", "20px");
                 cell.setAttribute("height", "20px");
                 //cell.setAttribute("onClick", "select(this.id)")
                 //cell.addEventListener("click", select(this.id))
-                cell.addEventListener("click", function (ev) {
+                /*cell.addEventListener("click", function (ev) {
                     //console.log(ev);
                     select(ev.target);
-                });
-                $('#r'+i+'c'+j).html("&nbsp;");
+                });*/
+                $('#r' + i + 'c' + j).html("&nbsp;");
             }
         }
 
     }
+
     function select(id) {
-        pos=id;
+        pos = id;
         console.log(pos)
         $(pos).html(' ');
         afficher(pions)
         $(pos).html('@')
 
     }
+
     function afficher(pions) {
         console.log(pions)
         refresh(10);
@@ -127,36 +137,44 @@ ID: <input id="partie_id" onmouseleave="start(this.value)">
             /*if(pion.selectionne) {
                 cell.html("@")
             }else {*/
-                if(pion.blanc) {
+            if (pion.typePion !== "mort") {
+                if (pion.blanc) {
                     cell.html('b');
-                    cell.removeClass();
                     cell.addClass('caseBlanche');
-                }else {
+                } else {
                     cell.html('n');
-                    cell.removeClass();
                     cell.addClass('caseNoire');
                 }
+            }
             //}
         })
     }
+
     function refresh(taille) {
-        for(var i=0;i<taille;i++){
-            for(var j=0;j<taille;j++)
-                $('#r'+i+'c'+j).html(' ')
+        for (var i = 0; i < taille; i++) {
+            for (var j = 0; j < taille; j++) {
+                var cell = $('#r' + i + 'c' + j);
+                cell.html(' ');
+                cell.removeAttr('class').attr('class', '');
+            }
+            //$('#r'+i+'c'+j).removeClass('caseNoire', 'caseBlanche')
         }
     }
-    function rejoindre(id){
+
+    function rejoindre(id) {
         $.ajax({
-            type:'GET',
-            url:'http://localhost:8000/dames/join/'+id,
+            type: 'GET',
+            url: 'http://localhost:8000/dames/join/' + id,
             success: function (result) {
                 token = result.token
-            }});
+            }
+        });
     }
-    function getLobby(){
+
+    function getLobby() {
         $.ajax({
-            type:'GET',
-            url:'http://localhost:8000/dames/lobby/',
+            type: 'GET',
+            url: 'http://localhost:8000/dames/sync/',
             success: function (result) {
                 $('#lobby').html('')
                 var lobby = document.getElementById('lobby');
@@ -170,8 +188,8 @@ ID: <input id="partie_id" onmouseleave="start(this.value)">
                         start(id)
                     });
                     row.insertCell().innerText = Partie.id;
-                    row.insertCell().innerText = Partie.player1
-                    row.insertCell().innerText = Partie.player2
+                    row.insertCell().innerText = Partie.player1;
+                    row.insertCell().innerText = Partie.player2;
                     //$('#lobby').append(Partie.id+Partie.player1+'</br>')
                 })
             }
