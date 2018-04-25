@@ -5,6 +5,8 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 
+from django.forms import model_to_dict
+
 from dames.models import Partie
 
 class DamesSync(WebsocketConsumer):
@@ -32,43 +34,39 @@ class DamesSync(WebsocketConsumer):
         #print(text_data)
         print(self.couleur+" pour "+self.adversaire)
         self.partie.data = text_data
-        async_to_sync(self.channel_layer.group_send)(self.adversaire + str(self.id),
+        async_to_sync(self.channel_layer.group_send)(self.adversaire + str(self.id),#pour activer l'interface admin
                                                       {'type': 'update_post',
                                                        'data': self.partie.data})
         self.partie.save()
+        print(self.partie.data)
 
     def update_post(self, event):
         print("envoi aux"+self.couleur)
         self.send(text_data=event['data'])
+        async_to_sync(self.channel_layer.group_send)("admin" + str(self.id),
+                                                     {'type': 'sync',
+                                                      'data': self.partie.data})
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(self.couleur + self.id, self.channel_name)
         async_to_sync(self.channel_layer.group_discard)("broadcast", self.channel_name)
 
-class DamesPing(WebsocketConsumer):
+class DamesAdmin(WebsocketConsumer):
     def connect(self):
-        self.id = self.scope["url_route"]["kwargs"]["id"] #récup l'id depuis l'url
-        async_to_sync(self.channel_layer.group_add)("ping_"+self.id, self.channel_name)
+        self.id = self.scope['url_route']['kwargs']['id']
+        async_to_sync(self.channel_layer.group_add)("admin"+self.id, self.channel_name)
         self.accept()
-        self.partie =  Partie.objects.get(id=self.id)
-        #self.send(json.dumps({'couleur': self.partie.couleur_joue}))
-        self.send(text_data=self.partie.couleur_joue)
+        self.send(text_data=json.dumps(model_to_dict(Partie.objects.get(pk=self.id))))
 
-
-    def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)("ping_"+self.id, self.channel_name)
-
-    def update(self, event): #appelé depuis la view, correpond au "type"
-        couleur = event["couleur"]
-        #self.send(text_data=json.dumps({'couleur': couleur}))
-        self.send(text_data=couleur)
+    def sync(self, event):
+        print(event)
+        #self.send(text_data=json.dumps(event['data']))
+        self.send(text_data=json.dumps(model_to_dict(Partie.objects.get(pk=self.id))))
 
     def receive(self, text_data=None, bytes_data=None):
-        print(text_data)
-        couleur = json.loads(text_data)["couleur"]
-        if couleur == "blancs" or couleur=="noirs":
-            booleen = False
-            if couleur=="blancs":  booleen = True
-            self.partie.player1_turn = booleen
-            self.partie.save()
-        self.send(text_data=self.partie.couleur_joue)
+        partie = Partie.objects.get(pk=text_data)
+        self.send(json.dumps(partie))
+
+    def disconnect(self, code):
+        async_to_sync(self.channel_layer.group_discard)("admin"+self.id, self.channel_name)
+        self.send(text_data="au revoir")

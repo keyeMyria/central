@@ -126,3 +126,6 @@ class Broadcast(APIView):
                                                       {'type': 'update_post',
                                                        'data': msg})
         return Response(msg)
+
+def admin(request):
+    return render(request, 'dames-admin.html',{})

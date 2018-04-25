@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'a-qui-le-tour/$', views.qui_joue),
     url(r'a-toi-le-tour/$', views.a_toi),
     url(r'^id/$', views.id),
-    url(r'broadcast/$', views.Broadcast.as_view())
+    url(r'broadcast/$', views.Broadcast.as_view()),
+    url(r'admin/', views.admin)
     #url(r'broadcast/(?P<msg>[^/]+)/$', views.broadcast)
 ]+router.urls

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dames</title>
+    <style>
+        #plateau {
+            background-color: burlywood;
+        }
+        .caseNoire {
+            background: black;
+            color: white;
+        }
+        .caseBlanche {
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<table id="plateau" border="1"></table>
+<div id="messages"></div>
+<table id="lobby" border="1"></table>
+<button onclick="getLobby()">lobby</button>
+ID: <input id="partie_id" onmouseleave="start(this.value)">
+<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+
+</body>
+<script>
+    /**
+     * Script pour voir en temps réel les parties de dames
+     * @type {string}
+     */
+    //var id;
+    var json_data = '[{"coordX":0,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":5,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":0,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":4,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":1,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false}]';
+    var plateau;
+    var pions;
+    //pions = JSON.parse('[{"coordX": 0, "coordY": 0, "typePion": "pion", "blanc": true, "selectionne": false}, {"coordX": 2, "coordY": 0, "typePion": "pion", "blanc": true, "selectionne": false}]');
+    var pos;
+    var gameSocket;
+    var token;
+
+    function test() {
+        plateau = document.getElementById('plateau');
+        genPlateau(10)
+        pions = JSON.parse('[{"coordX":0,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":0,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":5,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":1,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":0,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":2,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":6,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":8,"coordY":2,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":3,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":4,"coordY":4,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":7,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":9,"coordY":3,"typePion":"pion","blanc":true,"selectionne":false},{"coordX":1,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":9,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":8,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":1,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":3,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":5,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":7,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":9,"coordY":7,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":0,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":2,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":4,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":6,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false},{"coordX":8,"coordY":6,"typePion":"pion","blanc":false,"selectionne":false}]')
+        console.log(pions)
+        afficher(pions)
+    }
+
+    function start(id) {
+        stop()
+        console.log(id)
+        $('#partie_id').val(id)
+        //id = $('#partie_id').val();
+        gameSocket = new WebSocket('ws://localhost:8000/ws/admin/' + id);
+        plateau = document.getElementById('plateau')
+        genPlateau(10)
+        gameSocket.onmessage = function (e) {
+            //console.log(e.data)
+            partie = JSON.parse(e.data)
+            pions_json = partie.data.replace('[', '{"pions":[').replace(']', ']}')
+            pions = JSON.parse(pions_json).pions
+            //console.log(pions);
+            afficher(pions)
+            /*try {
+                pions = JSON.parse(json_data);
+                afficher(pions)
+            }
+            catch (e) {
+                $('#message').append(json_data);
+            }*/
+        };
+
+        gameSocket.onclose = function (e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+        gameSocket.connect();
+    }
+    function stop() {
+        if(gameSocket != null) {
+            console.log(gameSocket);
+            gameSocket.close();
+            //gameSocket.disconnect();
+            gameSocket = null;
+        }
+    }
+    function genPlateau(taille) {
+        plateau.innerHTML = '';
+        var row = plateau.insertRow()
+        for(var h=0;h<taille+1;h++){row.insertCell().innerText=h} //pour les axes horitontaux
+        for(var i=0;i<taille;i++) {
+            row = plateau.insertRow(-1)
+            row.insertCell().innerText = i+1 //pour les axes verticaux
+            //console.log("row")
+            row.setAttribute("id", "r"+i)
+            for(var j=0;j<taille;j++) {
+                var cell = row.insertCell(-1)
+                //console.log("cell")
+                cell.setAttribute("id", "r"+i+"c"+j);
+                cell.setAttribute("width", "20px");
+                cell.setAttribute("height", "20px");
+                //cell.setAttribute("onClick", "select(this.id)")
+                //cell.addEventListener("click", select(this.id))
+                cell.addEventListener("click", function (ev) {
+                    //console.log(ev);
+                    select(ev.target);
+                });
+                $('#r'+i+'c'+j).html("&nbsp;");
+            }
+        }
+
+    }
+    function select(id) {
+        pos=id;
+        console.log(pos)
+        $(pos).html(' ');
+        afficher(pions)
+        $(pos).html('@')
+
+    }
+    function afficher(pions) {
+        console.log(pions)
+        refresh(10);
+        pions.forEach(function (pion) {
+            var cell = $('#r' + pion.coordY + 'c' + pion.coordX);
+            /*if(pion.selectionne) {
+                cell.html("@")
+            }else {*/
+                if(pion.blanc) {
+                    cell.html('b');
+                    cell.removeClass();
+                    cell.addClass('caseBlanche');
+                }else {
+                    cell.html('n');
+                    cell.removeClass();
+                    cell.addClass('caseNoire');
+                }
+            //}
+        })
+    }
+    function refresh(taille) {
+        for(var i=0;i<taille;i++){
+            for(var j=0;j<taille;j++)
+                $('#r'+i+'c'+j).html(' ')
+        }
+    }
+    function rejoindre(id){
+        $.ajax({
+            type:'GET',
+            url:'http://localhost:8000/dames/join/'+id,
+            success: function (result) {
+                token = result.token
+            }});
+    }
+    function getLobby(){
+        $.ajax({
+            type:'GET',
+            url:'http://localhost:8000/dames/lobby/',
+            success: function (result) {
+                $('#lobby').html('')
+                var lobby = document.getElementById('lobby');
+                lobby.innerHTML = '';//reset le lobby
+                result.forEach(function (Partie) {
+                    var row = lobby.insertRow()
+                    row.addEventListener("click", function (e) {
+                        //console.log(e)
+                        var id = e.target.parentElement.firstChild.textContent; //remonte à la 1e case de la ligne pour prendre l'ID
+                        //console.log("id: "+e.target.parentElement.firstChild.textContent)
+                        start(id)
+                    });
+                    row.insertCell().innerText = Partie.id;
+                    row.insertCell().innerText = Partie.player1
+                    row.insertCell().innerText = Partie.player2
+                    //$('#lobby').append(Partie.id+Partie.player1+'</br>')
+                })
+            }
+        });
+    }
+</script>
+</html>
