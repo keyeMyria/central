@@ -50,11 +50,17 @@ def rejoindre(request, pk):
     partie.player2 = request.data["nom"]
     partie.save()
     print(partie.player2)
-    async_to_sync(get_channel_layer().group_send)( #lance le jeu une fois que les deux joueurs sont co
+    async_to_sync(get_channel_layer().group_send)(  # lance le jeu une fois que les deux joueurs sont co
         "blancs" + str(partie.id),
         {
             'type': 'update_post',
             'data': partie.data
+        })
+    async_to_sync(get_channel_layer().group_send)(  # lance le jeu une fois que les deux joueurs sont co
+        "blancs" + str(partie.id),
+        {
+            'type': 'update_post',
+            'data': "Vous jouez contre "+partie.player2
         })
     return HttpResponse(token.key)
 
