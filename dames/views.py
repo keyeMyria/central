@@ -19,10 +19,11 @@ from channels_redis import *
 from channels.layers import get_channel_layer
 import channels
 class PartieViewset(APIView):
-    permission_classes = [IsAuthenticated]
+    #@permission_classes([AllowAny])
     def get(self, request):
         return Response(Partie.objects.all().values()) #liste les parties
 
+    @permission_classes([IsAuthenticated])
     def post(self, request):
         try:
             partie = Partie.objects.get(user=request.user)
@@ -31,6 +32,8 @@ class PartieViewset(APIView):
         partie.data = self.request.data
         partie.save()
         return Response(request.data, status=201)
+
+    @permission_classes([IsAuthenticated])
     def delete(self, request):
         Partie.objects.get(user=request.user).delete()
         return Response("Partie finie !")
@@ -55,12 +58,6 @@ def rejoindre(request, pk):
         {
             'type': 'update_post',
             'data': partie.data
-        })
-    async_to_sync(get_channel_layer().group_send)(  # lance le jeu une fois que les deux joueurs sont co
-        "blancs" + str(partie.id),
-        {
-            'type': 'update_post',
-            'data': "Vous jouez contre "+partie.player2
         })
     return HttpResponse(token.key)
 
